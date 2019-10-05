@@ -5,7 +5,7 @@ async function resize() {
   const { image, sizes, outputDir, imageName=Date.now(), toExtensions='png', fit="cover" } =  workerData;
   let _shapImagesPromise = [];
   sizes.map( size => {
-    let { width, height } = typeof size === 'object' ? size : { width: size, height: size};
+    let { width, height } = typeof size === 'object' ? parseInt(size) : { width: parseInt(size), height: parseInt(size)};
     const _outputPath  =  `${outputDir}/${imageName}-${width}x${height}`;
     const _currentImage = sharp(image).resize(width, height, { fit });
 
@@ -15,7 +15,7 @@ async function resize() {
         _currentImage.png().toFile(`${_outputPath}.${toExtensions}`)
       ];
     } else {
-      toExtensions.forEach( extension => {
+      toExtensions.map( extension => {
         switch (extension) {
           case 'webp':
             _shapImagesPromise = [
@@ -37,6 +37,7 @@ async function resize() {
         }
       });
     }
+    return false;
   });
 
   let _res
