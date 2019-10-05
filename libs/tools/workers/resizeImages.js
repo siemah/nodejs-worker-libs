@@ -5,10 +5,9 @@ async function resize() {
   const { image, sizes, outputDir, imageName=Date.now(), toExtensions='png', fit="cover" } =  workerData;
   let _shapImagesPromise = [];
   sizes.map( size => {
-    let { width, height } = typeof size === 'object' ? parseInt(size) : { width: parseInt(size), height: parseInt(size)};
+    let { width, height } = typeof size === 'object' ? size : { width: parseInt(size), height: parseInt(size)};
     const _outputPath  =  `${outputDir}/${imageName}-${width}x${height}`;
     const _currentImage = sharp(image).resize(width, height, { fit });
-
     if( !Array.isArray(toExtensions) ) {
       _shapImagesPromise = [
         ..._shapImagesPromise, 
