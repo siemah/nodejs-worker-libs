@@ -2,18 +2,20 @@ let { parentPort, workerData, } = require('worker_threads');
 let sharp = require('sharp');
 
 async function resize() {
+  // receive data from worker instance
   const { image, sizes, outputDir, imageName=Date.now(), toExtensions='png', fit="cover" } =  workerData;
-  let _shapImagesPromise = [];
+  let _shapImagesPromise = [];// contain a list of promises
   sizes.map( size => {
     let { width, height } = typeof size === 'object' ? size : { width: parseInt(size), height: parseInt(size)};
     const _outputPath  =  `${outputDir}/${imageName}-${width}x${height}`;
     const _currentImage = sharp(image).resize(width, height, { fit });
+    // check if the worker ask 2 resize image 2 one kind of extension
     if( !Array.isArray(toExtensions) ) {
       _shapImagesPromise = [
         ..._shapImagesPromise, 
         _currentImage.png().toFile(`${_outputPath}.${toExtensions}`)
       ];
-    } else {
+    } else { // list of extensions asked 2 make
       toExtensions.map( extension => {
         switch (extension) {
           case 'webp':
