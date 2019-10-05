@@ -1,0 +1,11 @@
+node_modules/
+public/
+
+# logs
+yarn-error*
+yarn-logs*
+yarn.lock
+
+# env files
+.env*
+.DS_Store
