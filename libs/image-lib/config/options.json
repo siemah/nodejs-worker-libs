@@ -1,0 +1,18 @@
+{
+  "png": {
+    "speed": 10,
+    "strip": true,
+    "quality":[0.3, 0.7]
+  },
+  "webp": {
+    "preset": "icon",
+    "quality": 75,
+    "alphaQuality": 100,
+    "method": 4,
+    "lossless": true,
+    "metadata": "none"
+  },
+  "jpg": {
+    "progressive": false
+  }
+}
