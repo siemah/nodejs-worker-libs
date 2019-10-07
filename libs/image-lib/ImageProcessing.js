@@ -2,6 +2,7 @@ const imagemin = require('imagemin');
 const pngquant = require('imagemin-pngquant');
 const jpgquant = require('imagemin-jpegtran');
 const webpquant = require('imagemin-webp');
+
 const config = require('./config/options.json');
 
 /**
@@ -12,28 +13,53 @@ const config = require('./config/options.json');
 
 class ImageProcessing {
 
+  getMinifyConfiguration(source, minifyAll = false) {
+    return new Promise((resolve, reject) => {
+      if(!source) 
+        reject(new Error('You must specify at least the source params, null/undefined given'));
+      
+      let { png, webp, jpg } = config;
+      let _ext = source.substr(source.lastIndexOf('.') + 1);
+      _ext = _ext.toString().includes(['jpeg', 'jpg']) ? 'jpg' : _ext;
+      let plugins ;
+      if (minifyAll) {
+        plugins = [webpquant(webp), pngquant(png), jpgquant(jpg)];
+      } else {
+        switch (_ext) {
+          case 'png':
+            plugins = [pngquant(png)];
+            break;
+          case 'webp':
+            plugins = [webpquant(webp)];
+            break;
+          case 'jpg':
+            plugins = [jpgquant(jpg)];
+            break;
+          default:
+            plugins = [pngquant(png), jpgquant(jpg)];
+            break;
+        }
+      }
+
+      resolve({ plugins, });
+    });
+  }
+
   /**
-   * 0- check if all needed options are passed
-   * 1- need source to image file
-   * 2- destination directory
-   * 3- 
+   * minify the size of images
+   * @param {object} options containt file source or pattern, destination props
+   * @return {Promise<any>}
+   * @see https://github.com/imagemin/imagemin
    */
   minify(options) {
     return new Promise( async (resolve, reject) => {
-      if(!options) 
+      if (!options) 
         reject(new Error(`Options params is missing`));
-      if(!options.source || typeof options.source !== 'string')
+      if (!options.source || typeof options.source !== 'string')
         reject(new Error(`Source props is required`));
       
       let { source, destination, } = options;
-      let { png, webp, jpg } = config;
-      let _ext = source.substr(source.lastIndexOf('.')+1);
-      let plugins = 
-        _ext === 'png'
-          ? [pngquant(png)]
-          : _ext === 'webp'
-            ? [webpquant(webp)]
-            : [jpgquant(jpg)];
+      let {plugins} = await this.getMinifyConfiguration(source); 
       
       try {
         let data = await imagemin(
@@ -47,7 +73,7 @@ class ImageProcessing {
       } catch (error) {
         reject(error);
       }
-      
+
     });
   }
 
