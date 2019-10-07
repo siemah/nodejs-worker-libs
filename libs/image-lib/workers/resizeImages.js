@@ -9,35 +9,29 @@ async function resize() {
     let { width, height } = typeof size === 'object' ? size : { width: parseInt(size), height: parseInt(size)};
     const _outputPath  =  `${outputDir}/${imageName}-${width}x${height}`;
     const _currentImage = sharp(image).resize(width, height, { fit });
-    // check if the worker ask 2 resize image 2 one kind of extension
-    if( !Array.isArray(toExtensions) ) {
-      _shapImagesPromise = [
-        ..._shapImagesPromise, 
-        _currentImage.png().toFile(`${_outputPath}.${toExtensions}`)
-      ];
-    } else { // list of extensions asked 2 make
-      toExtensions.map( extension => {
-        switch (extension) {
-          case 'webp':
-            _shapImagesPromise = [
-              ..._shapImagesPromise, 
-              _currentImage.webp({ lossless: true, }).toFile(`${_outputPath}.${extension}`)
-            ];
-            break;
-          case 'jpeg':
-            _shapImagesPromise = [
-              ..._shapImagesPromise, 
-              _currentImage.jpeg().toFile(`${_outputPath}.${extension}`)
-            ];
-            break;
-          default: 
-            _shapImagesPromise = [
-              ..._shapImagesPromise, 
-              _currentImage.png().toFile(`${_outputPath}.${extension}`)
-            ];
-        }
-      });
-    }
+    
+    toExtensions.map( extension => {
+      switch (extension) {
+        case 'webp':
+          _shapImagesPromise = [
+            ..._shapImagesPromise, 
+            _currentImage.webp({ lossless: true, }).toFile(`${_outputPath}.${extension}`)
+          ];
+          break;
+        case 'jpeg':
+          _shapImagesPromise = [
+            ..._shapImagesPromise, 
+            _currentImage.jpeg().toFile(`${_outputPath}.${extension}`)
+          ];
+          break;
+        default: 
+          _shapImagesPromise = [
+            ..._shapImagesPromise, 
+            _currentImage.png().toFile(`${_outputPath}.${extension}`)
+          ];
+      }
+    });
+    
     return false;
   });
 

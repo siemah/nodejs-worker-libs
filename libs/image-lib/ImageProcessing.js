@@ -92,6 +92,12 @@ class ImageProcessing {
    */
   resizeImage(image, sizes, outputDir, imageName, toExtensions, fit) {
     return new Promise((resolve, reject) => {
+
+      if(typeof image !== 'string' || typeof outputDir !== 'string')
+        reject('Wrong image or destination directory path. they must be of string type');
+      if(!Array.isArray(toExtensions))
+        reject('You must passe a list of extensions as an array');
+
       let worker = new Worker(
         `${__dirname}/workers/resizeImages.js`, 
         {
